@@ -104,7 +104,8 @@ func main() {
 	router := gin.Default()
 	router.GET("/tasks", getTasks)
 	router.GET("/tasks/:id", getTasksbyID)
-	router.PUT("/tasks/:id/", updateTask)
+	router.PATCH("/tasks/:id/", updateTask)
+	// router.PUT("/tasks/:id/", updateTask)
 	router.POST("/tasks", createTask)
 	router.DELETE("/tasks/:id", deleteTask)
 	// Listen and Server in :8080
