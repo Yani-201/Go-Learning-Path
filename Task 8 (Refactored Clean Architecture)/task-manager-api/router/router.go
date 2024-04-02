@@ -20,16 +20,20 @@ func Setup(env *config.Environment, timeout time.Duration, db *mongo.Database, g
 	userRepository := repository.NewUserRepository(db, "users")
 	taskRepository := repository.NewTaskRepository(db, "tasks")
 
+
+
 	userUseCase := usecase.NewUserUseCase(&ctx, env, &userRepository )
-	taskUsecase := usecase.NewTaskUseCase(&ctx, env, &taskRepository)
+	taskUseCase := usecase.NewTaskUseCase(&ctx, env, &taskRepository, &userRepository)
+	authUseCase := usecase.NewAuthUseCase(&ctx, env, &userRepository)
 
 	userController := controller.NewUserController(env, &userUseCase)
-	taskController :=  controller.NewTaskController(env, &taskUsecase)
+	taskController :=  controller.NewTaskController(env, &taskUseCase)
+	authController := controller.NewAuthController(env, &authUseCase)
 
 	publicRouter := gin.Group("auth")
-	publicRouter.POST("/register", userController.Register)
-	publicRouter.POST("/login", userController.Login)
-	publicRouter.POST("/adminRegister", userController.AdminRegister)
+	publicRouter.POST("/register", authController.RegisterUser)
+	publicRouter.POST("/login", authController.Login)
+	publicRouter.POST("/adminRegister", authController.RegisterAdmin)
 
 	taskRouter := gin.Group("task")
 	taskRouter.GET("/", middleware.AuthMiddleware(env.JwtSecret), taskController.getTasks)
@@ -41,11 +45,16 @@ func Setup(env *config.Environment, timeout time.Duration, db *mongo.Database, g
 	userRouter := gin.Group("user")
 	userRouter.GET("/", middleware.AuthMiddleware(env.JwtSecret), userController.getUsers)
 	userRouter.GET("/:id", middleware.AuthMiddleware(env.JwtSecret), userController.getUserByID)
-	userRouter.PATCH("/updateuser", middleware.AuthMiddleware(env.JwtSecret), userController.updateUserInfo)
+	userRouter.PATCH("/updateuser", middleware.AuthMiddleware(env.JwtSecret), userController.updateUser)
 	userRouter.PATCH("/updatepassword", middleware.AuthMiddleware(env.JwtSecret), userController.updatePassword)
 	userRouter.DELETE("/:id", middleware.AuthMiddleware(env.JwtSecret), userController.deleteUser)
 
 
+	// blogRouter.GET("/", blogController.GetAllBlogs)
+	// blogRouter.GET("/:blog_id", blogController.GetByBlogID)
+	// blogRouter.POST("/",middleware.AuthMiddleware(env.JwtSecret), blogController.CreateBlog)
+	// blogRouter.PUT("/:blog_id",middleware.AuthMiddleware(env.JwtSecret), blogController.UpdateBlog)
+	// blogRouter.DELETE("/:blog_id",middleware.AuthMiddleware(env.JwtSecret), blogController.DeleteBlog)
 
 
 }

@@ -157,6 +157,7 @@ func loginUser(ctx *gin.Context) {
 		"user_id": retrievedUser.UserID,
 		"username": retrievedUser.Username,
 		"role": retrievedUser.Role,
+		"email": retrievedUser.Email,
 		"exp": time.Now().Add(time.Hour * 24 * 7).Unix(), // Token expires in 1 week
 	})
 

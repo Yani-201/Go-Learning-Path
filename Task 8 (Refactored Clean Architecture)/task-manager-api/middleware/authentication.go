@@ -65,6 +65,15 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 			return
 		}
 
+		Email, ok := claims["email"].(string)
+
+			
+		if !ok {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Email not found in token"})
+		return
+	}
+
+
 			Role, ok := claims["role"].(string)
 	
 	
@@ -75,6 +84,7 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 			c.Set("AuthenticatedUser", &model.AuthenticatedUser{
 				UserID: UserID,
 				Username: Username,
+				Email: Email,
 				Role: Role,
 			})
 	
