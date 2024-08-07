@@ -166,7 +166,8 @@ func listBorrowedBooks(library service.LibraryManager, scanner *bufio.Scanner) {
         fmt.Println("Borrowed Books:")
         for _, book := range books {
             fmt.Printf("ID: %d, Title: %s, Author: %s\n", book.Id, book.Title, book.Author)
-        }}
+        }
+    }
 }
 
 func addmember(library service.LibraryManager, scanner *bufio.Scanner) {

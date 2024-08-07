@@ -33,8 +33,13 @@ func (c card) format() string {
 		fs += fmt.Sprintf("%-15v ... %0.2f \n", k+":", v)
 	}
 
-	fs += fmt.Sprintf("%-15v ... %0.2f \n", "Average Grade:", c.Total/float64(c.Subjects))
+	if c.Subjects == 0 {
+		fs += "No subjects available to calculate average grade.\n"
+	} else {
+		fs += fmt.Sprintf("%-15v ... %0.2f \n", "Average Grade:", c.Total/float64(c.Subjects))
+	}
 	return fs
+	
 }
 
 func (c *card) updateCard(subject_name string, grade float64) {
