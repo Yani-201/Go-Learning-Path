@@ -1,5 +1,0 @@
-The documentation for the task management API is created and published using postman
-
-The end points for the /tasks API as mentioned in the requirement are implemented and tested using postman which is also included in the pubished documentation
-
-You can find the Postman Documentation Link: https://documenter.getpostman.com/view/33710823/2sA2xpTpoD
