@@ -10,6 +10,7 @@ The Library Management System is a simple console-based application that allows 
 - **Return a book**: Return a borrowed book.
 - **List all available books**: Display all books currently available in the library.
 - **List all borrowed books by a member**: Display all books borrowed by a specific member.
+- **Add a new member**: Add a new member to the library.
 - **Exit**: Exit the library management system.
 
 ## Folder Structure
