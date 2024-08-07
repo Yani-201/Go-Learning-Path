@@ -37,14 +37,14 @@ func Validateinput(inp string) float64{
 		reader := bufio.NewReader(os.Stdin)
 		new, _ := getinput("Enter your grade for this Subject:  ", reader)
 
-		Validateinput(new)
+		return Validateinput(new)
 	}
 	if g < 0 || g > 100 {
 		fmt.Println("The Grade value must be in a range from 0 to 100.")
 		reader := bufio.NewReader(os.Stdin)
 		new, _ := getinput("Enter your grade for this Subject:  ", reader)
 
-		Validateinput(new)
+		return Validateinput(new)
 	}
 
 	return g
