@@ -3,37 +3,11 @@ package data
 import (
 	"context"
 	"errors"
-	"log"
-	"sync"
 	"task-manager-api-mongoDB/model"
 	
-
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+
 )
-
-var url = "mongodb://localhost:27017"
-var db *mongo.Database
-var once sync.Once
-
-func GetClient() *mongo.Database {
-	once.Do(func() {
-		clientOpt := options.Client().ApplyURI(url)
-		client, err := mongo.Connect(context.TODO(), clientOpt)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = client.Ping(context.TODO(), nil)
-		if err != nil {
-			log.Fatal(err)
-		}
-		db = client.Database("taskmanager")
-	})
-	return db
-}
-
 
 func GetAllTasks() ([]model.Task, error) {
 	db := GetClient()
