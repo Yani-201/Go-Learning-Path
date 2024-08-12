@@ -29,6 +29,10 @@ func NewLibraryManager() LibraryManager {
 
 // AddBook implements LibraryManager.
 func (l *Library) AddBook(book model.Book) error {
+	if book.Id <= 0 {
+        return errors.New("invalid book ID")
+    }
+
 	if _,exists := l.Books[book.Id]; exists{
 		return errors.New("book already exists")
 	}
@@ -39,6 +43,9 @@ func (l *Library) AddBook(book model.Book) error {
 
 // AddMember implements LibraryManager.
 func (l *Library) AddMember(member model.Member) error {
+	if member.Id <= 0 {
+        return errors.New("invalid member ID")
+    }
 	if _, exists := l.Members[member.Id]; exists{
 		return errors.New("member already exists")
 	}
@@ -48,6 +55,9 @@ func (l *Library) AddMember(member model.Member) error {
 
 // RemoveBook implements LibraryManager.
 func (l *Library) RemoveBook(bookId int) error {
+	if bookId <= 0 {
+        return errors.New("invalid book ID")
+    }
 	if _, exists := l.Books[bookId]; !exists{
 		return errors.New("book does not exist")
 	}
@@ -57,11 +67,17 @@ func (l *Library) RemoveBook(bookId int) error {
 
 // BorrowBook implements LibraryManager.
 func (l *Library) BorrowBook(bookId int, memberId int) error {
+	if memberId <= 0 {
+        return errors.New("invalid member ID")
+    }
 	member, exist := l.Members[memberId]
 	if !exist {
 		return errors.New("member not Found")
 	}
 
+	if bookId <= 0 {
+        return errors.New("invalid book ID")
+    }
 	book, exists := l.Books[bookId]
 	if !exists{
 		return errors.New("book not Found")
@@ -83,11 +99,17 @@ func (l *Library) BorrowBook(bookId int, memberId int) error {
 
 // ReturnBook implements LibraryManager.
 func (l *Library) ReturnBook(bookId int, memberId int) error {
+	if memberId <= 0 {
+        return errors.New("invalid member ID")
+    }
 	member, exist := l.Members[memberId]
 	if !exist {
 		return errors.New("member not found")
 	}
 
+	if bookId <= 0 {
+        return errors.New("invalid book ID")
+    }
 	book, exists := l.Books[bookId]
 	if !exists {
 		return errors.New("book not found")
