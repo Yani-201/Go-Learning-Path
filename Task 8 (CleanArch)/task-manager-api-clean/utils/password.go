@@ -2,7 +2,7 @@ package utils
 
 import (
 	"time"
-    "task-manager-api/model"
+    "task-manager-api-clean/domain"
 
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
@@ -18,15 +18,14 @@ func ComparePasswords(hashedPassword string, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
-func TokenGenerate(auth *model.AuthenticatedUser, secret string) (string, error) {
+func TokenGenerate(auth *domain.AuthenticatedUser, secret string) (string, error) {
     token := jwt.New(jwt.SigningMethodHS256)
 
     // Set claims
     claims := token.Claims.(jwt.MapClaims)
     claims["username"] = auth.Username
     claims["role"] = auth.Role
-    claims["id"] = auth.UserID
-    claims["email"] = auth.Email
+    claims["user_id"] = auth.UserID
     claims["exp"] = time.Now().Add(time.Hour * 24 * 7).Unix()
 
     tokenString, err := token.SignedString([]byte(secret))

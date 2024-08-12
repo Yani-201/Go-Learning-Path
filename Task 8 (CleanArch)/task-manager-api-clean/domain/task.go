@@ -5,23 +5,34 @@ import (
 	"time"
 )
 
+
 type Task struct {
-	TaskID      string    `json:"task_id" bson:"_id"`
-	UserID      string    `json:"user_id" bson:"user_id"`
-	Title       string    `json:"title" bson:"title"`
-	Description string    `json:"description" bson:"description"`
-	DueDate     time.Time `json:"due_date" bson:"due_date"`
-	Status      string    `json:"status" bson:"status"`
-	CreatedAt   time.Time `json:"createtimestamp" bson:"createtimestamp"`
-	UpdatedAt   time.Time `json:"updatetimestamp" bson:"updatetimestamp"`
+	Id          string `json:"id" bson:"_id"`
+	Title       string `json:"title" bson:"title"`
+	Description string `json:"description" bson:"description"`
+	Status      string   `json:"status" bson:"status"`
+	DueDate     time.Time `json:"dueDate" bson:"dueDate"`
+}
+
+type TaskInput struct {
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Status      string     `json:"status"`
+	DueDate     time.Time `json:"dueDate"`
 }
 
 type TaskRepository interface {
-	GetAll(c context.Context, param string) (*[]*Task, error)
-	GetByID(c context.Context, taskID string) (*Task, error)
-	GetByUserId(c context.Context, userID string) (*[]*Task, error)
 	Create(c context.Context, task *Task) (*Task, error)
-	Update(c context.Context, task *Task) (*Task, error)
-	Delete(c context.Context, taskID string) (*Task, error)
+	Update(c context.Context, id string, task *Task) (*Task, error)
+	Delete(c context.Context, id string) error
+	GetAll(c context.Context) (*[]*Task, error)
+	GetById(c context.Context, taskId string) (*Task, error)
+}
 
+type TaskUseCase interface {
+	Create(c context.Context, payload *TaskInput) (*Task, error)
+	Update(c context.Context, taskId string, payload *TaskInput) (*Task, error)
+	Delete(c context.Context, taskId string) error
+	GetAll(c context.Context) (*[]*Task, error)
+	GetById(c context.Context, taskId string) (*Task, error)
 }

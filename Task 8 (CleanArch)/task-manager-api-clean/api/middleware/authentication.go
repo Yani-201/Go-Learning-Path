@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"task-manager-api/model"
+	"task-manager-api-clean/domain"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -65,15 +65,6 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 			return
 		}
 
-		Email, ok := claims["email"].(string)
-
-			
-		if !ok {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Email not found in token"})
-		return
-	}
-
-
 			Role, ok := claims["role"].(string)
 	
 	
@@ -81,10 +72,9 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "role not found in token"})
 				return
 			}
-			c.Set("AuthenticatedUser", &model.AuthenticatedUser{
+			c.Set("AuthenticatedUser", &domain.AuthenticatedUser{
 				UserID: UserID,
 				Username: Username,
-				Email: Email,
 				Role: Role,
 			})
 	

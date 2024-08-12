@@ -1,60 +1,49 @@
 package router
 
-
-
 import (
-	"task-manager-api/config"
-	"task-manager-api/controller"
-	"task-manager-api/middleware"
-	"task-manager-api/repository"
-	"task-manager-api/usecase"
-	"context"
-	"time"
+	"task-manager-api-clean/config"
+	"task-manager-api-clean/api/controller"
+	"task-manager-api-clean/api/middleware"
+	"task-manager-api-clean/repository"
+	"task-manager-api-clean/usecase"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Setup(env *config.Environment, timeout time.Duration, db *mongo.Database, gin *gin.Engine) {
-	ctx := context.TODO()
+func Setup(env *config.Environment, db *mongo.Database, gin *gin.Engine) {
+	// Initialize repositories
 	userRepository := repository.NewUserRepository(db, "users")
 	taskRepository := repository.NewTaskRepository(db, "tasks")
 
+	// Initialize use cases
+	userUseCase := usecase.NewUserUseCase(userRepository, env)
+	taskUseCase := usecase.NewTaskUseCase(taskRepository, userRepository, env)
 
+	// Initialize controllers
+	userController := controller.NewUserController(userUseCase)
+	taskController := controller.NewTaskController(taskUseCase)
 
-	userUseCase := usecase.NewUserUseCase(&ctx, env, &userRepository )
-	taskUseCase := usecase.NewTaskUseCase(&ctx, env, &taskRepository, &userRepository)
-	authUseCase := usecase.NewAuthUseCase(&ctx, env, &userRepository)
+	// Middleware
+	authMiddleware := middleware.AuthMiddleware(env.JwtSecret)
 
-	userController := controller.NewUserController(env, &userUseCase)
-	taskController :=  controller.NewTaskController(env, &taskUseCase)
-	authController := controller.NewAuthController(env, &authUseCase)
+	// User routes
+	userRouter := gin.Group("")
+	{
+		userRouter.POST("/register", userController.CreateUser)
+		userRouter.POST("/login", userController.LoginUser)
+		userRouter.POST("/promote/:username", authMiddleware, userController.PromoteUser)
+	}
 
-	publicRouter := gin.Group("auth")
-	publicRouter.POST("/register", authController.RegisterUser)
-	publicRouter.POST("/login", authController.Login)
-	publicRouter.POST("/adminRegister", authController.RegisterAdmin)
-
-	taskRouter := gin.Group("task")
-	taskRouter.GET("/", middleware.AuthMiddleware(env.JwtSecret), taskController.getTasks)
-	taskRouter.GET("/:id", middleware.AuthMiddleware(env.JwtSecret), taskController.getTasksByID)
-	taskRouter.PATCH("/:id", middleware.AuthMiddleware(env.JwtSecret), taskController.updateTask)
-	taskRouter.POST("/", middleware.AuthMiddleware(env.JwtSecret), taskController.createTask)
-	taskRouter.DELETE(":id", middleware.AuthMiddleware(env.JwtSecret), taskController.deleteTask)
-
-	userRouter := gin.Group("user")
-	userRouter.GET("/", middleware.AuthMiddleware(env.JwtSecret), userController.getUsers)
-	userRouter.GET("/:id", middleware.AuthMiddleware(env.JwtSecret), userController.getUserByID)
-	userRouter.PATCH("/updateuser", middleware.AuthMiddleware(env.JwtSecret), userController.updateUser)
-	userRouter.PATCH("/updatepassword", middleware.AuthMiddleware(env.JwtSecret), userController.updatePassword)
-	userRouter.DELETE("/:id", middleware.AuthMiddleware(env.JwtSecret), userController.deleteUser)
-
-
-	// blogRouter.GET("/", blogController.GetAllBlogs)
-	// blogRouter.GET("/:blog_id", blogController.GetByBlogID)
-	// blogRouter.POST("/",middleware.AuthMiddleware(env.JwtSecret), blogController.CreateBlog)
-	// blogRouter.PUT("/:blog_id",middleware.AuthMiddleware(env.JwtSecret), blogController.UpdateBlog)
-	// blogRouter.DELETE("/:blog_id",middleware.AuthMiddleware(env.JwtSecret), blogController.DeleteBlog)
-
-
+	// Task routes
+	taskRouter := gin.Group("tasks")
+	taskRouter.Use(authMiddleware)
+	{
+		taskRouter.GET("/", taskController.GetTasks)
+		taskRouter.GET("/:id", taskController.GetTaskByID)
+		taskRouter.PATCH("/:id", taskController.UpdateTask)
+		taskRouter.POST("/", taskController.CreateTask)
+		taskRouter.DELETE("/:id", taskController.DeleteTask)
+	}
 }
+

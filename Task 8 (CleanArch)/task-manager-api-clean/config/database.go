@@ -18,7 +18,7 @@ var (
 )
 
 // GetMongoClient returns a singleton instance of the MongoDB client.
-func GetMongoClient(uri string, dbName string) (*mongo.Database, error) {
+func GetClient(uri string, dbName string) (*mongo.Database, error) {
     var err error
     once.Do(func() {
         clientOptions := options.Client().ApplyURI(uri)
@@ -30,11 +30,10 @@ func GetMongoClient(uri string, dbName string) (*mongo.Database, error) {
             log.Fatal(err)
         }
 
+
         err = mongoClient.Ping(ctx, nil)
         if err != nil {
-            log.Println("Failed to connect to MongoDB")
-            fmt.Println(err)
-            return
+            log.Fatal(err)
         }
 
         fmt.Println("Successfully connected to MongoDB")

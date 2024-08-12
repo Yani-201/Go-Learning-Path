@@ -103,6 +103,7 @@ func PromoteUser(ctx *gin.Context) {
 		return
 	}
 	username := ctx.Param("username")
+	
 
 	err := data.PromoteUser(ctx, username)
 	if err != nil {

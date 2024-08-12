@@ -78,5 +78,6 @@ func PromoteUser(ctx context.Context, username string) error {
 		return errors.New("failed to promote user")
 	}
 
-	return nil
+	return nil 
+
 }

@@ -13,6 +13,7 @@ type Environment struct {
 	DatabaseName string
 	JwtSecret   string
 	JwtExpiration int
+	TimeOut string
 	Port string
 }
 
@@ -29,6 +30,7 @@ func Load() (*Environment, error){
 		JwtSecret: os.Getenv("JWT_SECRET"),
 		JwtExpiration: jwtExpiration,
 		Port: os.Getenv("PORT"),
+		TimeOut: os.Getenv("TIMEOUT"),
 		DatabaseName: os.Getenv("DATABASE_NAME"),
 	}, err
 
