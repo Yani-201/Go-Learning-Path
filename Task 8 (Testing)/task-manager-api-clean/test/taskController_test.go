@@ -195,43 +195,6 @@ func (suite *TaskControllerTestSuite) TestUpdateTask_Success() {
 
 }
 
-// func (suite *TaskControllerTestSuite) TestUpdateTask_Success() {
-// 	taskInput := &domain.TaskInput{Title: "Updated Task", Description: "Updated Description", Status: "Completed", DueDate: time.Now()}
-// 	task := &domain.Task{Id: "1", Title: taskInput.Title, Description: taskInput.Description, Status: taskInput.Status, DueDate: taskInput.DueDate}
-
-// 	suite.mockUseCase.On("GetById", mock.Anything, "1").Return(task, nil)
-// 	suite.mockUseCase.On("Update", mock.Anything, "1", taskInput).Return(task, nil)
-
-// 	body, _ := json.Marshal(taskInput)
-// 	req, _ := http.NewRequest(http.MethodPut, "/tasks/1", bytes.NewBuffer(body))
-	
-// 	// Set the JWT token
-
-
-// 	resp := httptest.NewRecorder()
-// 	suite.router.ServeHTTP(resp, req)
-
-// 	suite.Equal(http.StatusOK, resp.Code)
-// 	suite.Contains(resp.Body.String(), "Updated Task")
-// }
-
-// func (suite *TaskControllerTestSuite) TestUpdateTask_Failure_Unauthorized() {
-// 	taskInput := &domain.TaskInput{Title: "Updated Task", Description: "Updated Description", Status: "Completed", DueDate: time.Now()}
-
-// 	body, _ := json.Marshal(taskInput)
-// 	req, _ := http.NewRequest(http.MethodPut, "/tasks/1", bytes.NewBuffer(body))
-
-// 	// Set the JWT token for a non-admin user
-// 	token := suite.createTestJWT("123", "testuser", "user")
-// 	req.Header.Set("Authorization", "Bearer "+token)
-
-// 	resp := httptest.NewRecorder()
-// 	suite.router.ServeHTTP(resp, req)
-
-// 	suite.Equal(http.StatusUnauthorized, resp.Code)
-// 	suite.Contains(resp.Body.String(), "Unauthorized: Only the admin can update this task")
-// }
-
 func (suite *TaskControllerTestSuite) TestUpdateTask_Failure_Unauthorized() {
 	taskInput := &domain.TaskInput{Title: "Updated Task", Description: "Updated Description", Status: "Completed", DueDate: time.Now()}
 
