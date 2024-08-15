@@ -71,9 +71,13 @@ func (repo *TaskRepository) Update(c context.Context, id string, updateTask *dom
 }
 
 func (repo *TaskRepository) Delete(c context.Context, id string) error {
-	_, err := repo.database.Collection(repo.collection).DeleteOne(c, bson.M{"_id": id})
+	result, err := repo.database.Collection(repo.collection).DeleteOne(c, bson.M{"_id": id})
 	if err != nil {
         return err
+    }
+
+	if result.DeletedCount == 0 {
+        return errors.New("no document found with the given id")
     }
 
     return nil
