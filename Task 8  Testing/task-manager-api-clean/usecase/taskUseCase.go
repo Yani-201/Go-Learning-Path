@@ -3,21 +3,18 @@ package usecase
 import (
 	"context"
 	"task-manager-api-clean/domain"
-	"task-manager-api-clean/config"
+	
 )
 
+
 type TaskUseCase struct {
-	Environment *config.Environment
 	TaskRepository domain.TaskRepository
-	UserRepository domain.UserRepository
+
 }
 
-func NewTaskUseCase(tr domain.TaskRepository, ur domain.UserRepository, env *config.Environment) domain.TaskUseCase {
+func NewTaskUseCase(tr domain.TaskRepository) domain.TaskUseCase {
 	return &TaskUseCase{
 		TaskRepository: tr,
-		UserRepository: ur,
-		Environment: env,
-		
 	}
 }
 func (tu *TaskUseCase) Create(c context.Context, payload *domain.TaskInput) (*domain.Task, error) {

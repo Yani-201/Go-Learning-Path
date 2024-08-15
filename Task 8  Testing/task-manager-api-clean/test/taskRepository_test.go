@@ -15,10 +15,6 @@ import (
     "go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const (
-    nonExistentId  = "nonExistentId"
-)
-
 type TaskRepositoryTestSuite struct {
     suite.Suite
     repo       domain.TaskRepository
@@ -94,7 +90,7 @@ func (suite *TaskRepositoryTestSuite) TestUpdate_Failure() {
     defer cancel()
 
     // Attempting to update a non-existent task
-    _, err := suite.repo.Update(ctx, nonExistentId, &domain.Task{Title: "New Title"})
+    _, err := suite.repo.Update(ctx, "nonExistentId", &domain.Task{Title: "New Title"})
     suite.Error(err)
 }
 
@@ -131,7 +127,7 @@ func (suite *TaskRepositoryTestSuite) TestDelete_Failure() {
     defer cancel()
 
     // Attempting to delete a non-existent task
-    err := suite.repo.Delete(ctx, nonExistentId)
+    err := suite.repo.Delete(ctx, "nonExistentId")
     suite.Error(err)
 }
 
@@ -175,7 +171,7 @@ func (suite *TaskRepositoryTestSuite) TestGetById_Failure() {
     defer cancel()
 
     // Attempting to fetch a non-existent task
-    _, err := suite.repo.GetById(ctx, nonExistentId)
+    _, err := suite.repo.GetById(ctx, "nonExistentId")
     suite.Error(err)
 }
 

@@ -18,7 +18,7 @@ func Setup(env *config.Environment, db *mongo.Database, gin *gin.Engine) {
 
 	// Initialize use cases
 	userUseCase := usecase.NewUserUseCase(userRepository, env)
-	taskUseCase := usecase.NewTaskUseCase(taskRepository, userRepository, env)
+	taskUseCase := usecase.NewTaskUseCase(taskRepository)
 
 	// Initialize controllers
 	userController := controller.NewUserController(userUseCase)
