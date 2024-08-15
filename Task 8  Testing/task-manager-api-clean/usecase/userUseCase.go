@@ -12,14 +12,14 @@ import (
 
 
 type UserUseCase struct {
-	environment *config.Environment
+	Environment *config.Environment
 	UserRepository domain.UserRepository
 }
 
 func NewUserUseCase(userRepo domain.UserRepository, env *config.Environment) domain.UserUseCase {
 	return &UserUseCase{
 		UserRepository: userRepo,
-		environment: env,
+		Environment: env,
 	}
 }
 
@@ -33,12 +33,12 @@ func (uc *UserUseCase) RegisterUser(c context.Context, payload *domain.UserCreat
 		Password: payload.Password,
 		Email:    payload.Email,
 	}
+
 	//check if user exists
 	_, err := uc.UserRepository.GetByUsername(c, user.Username)
 	if err == nil {
 		return nil, errors.New("user already exists")	
 	}
-	
 
 	createdUser, err := uc.UserRepository.Create(c, user)
 	if err != nil {
@@ -69,22 +69,18 @@ func (uc *UserUseCase) Login(c context.Context, payload *domain.UserLogin) (stri
 		UserID:   user.UserID,
 		Username: user.Username,
 		Role:     user.Role,
-	}, uc.environment.JwtSecret)
+	}, uc.Environment.JwtSecret)
 
 	return jwtToken, err
 }
 
 func (uc *UserUseCase) Promote(c context.Context, username string) (*domain.UserInfo, error) {
-	user, err := uc.UserRepository.GetByUsername(c, username)
+	_, err := uc.UserRepository.GetByUsername(c, username)
     if err != nil {
         return nil, err
     }
 
-    if user.Role == "admin" {
-        return nil, errors.New("user is already an admin")
-    }
-
-	user, err = uc.UserRepository.UpdateRole(c, username, "admin")
+	user, err := uc.UserRepository.UpdateRole(c, username, "admin")
 	if err != nil {
 		return nil, err
 	}

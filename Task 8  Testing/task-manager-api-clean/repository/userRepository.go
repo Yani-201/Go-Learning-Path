@@ -51,19 +51,26 @@ func (ur *UserRepository) Create(c context.Context, user *domain.User) (*domain.
 func (ur *UserRepository) GetByUsername(c context.Context, username string) (*domain.User, error) {
 	var user domain.User
 	if err := ur.database.Collection(ur.collection).FindOne(c, bson.M{"username": username}).Decode(&user); err != nil {
-		return nil, errors.New("invalid username or password")
+		return nil, errors.New("user with the given username not")
 	}
 	return &user, nil
 }
 
-func (ur *UserRepository) UpdateRole(c context.Context, userID string, role string) (*domain.User, error) {
-	filter := bson.M{"username": userID}
+
+func (ur *UserRepository) UpdateRole(c context.Context, username string, role string) (*domain.User, error) {
+	filter := bson.M{"username": username}
 
 	var user domain.User
 	err := ur.database.Collection(ur.collection).FindOne(c, filter).Decode(&user)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
+
+	
+    if user.Role == "admin" {
+        return nil, errors.New("user is already an admin")
+    }
+
 
 	update := bson.M{
 		"$set": bson.M{
@@ -76,5 +83,10 @@ func (ur *UserRepository) UpdateRole(c context.Context, userID string, role stri
 		return nil, errors.New("failed to update user role")
 	}
 
-	return &user, nil
+	updatedUser, err := ur.GetByUsername(c, username)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedUser, nil
 }

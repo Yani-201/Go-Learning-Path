@@ -7,7 +7,7 @@ import (
 )
 
 type TaskUseCase struct {
-	environment *config.Environment
+	Environment *config.Environment
 	TaskRepository domain.TaskRepository
 	UserRepository domain.UserRepository
 }
@@ -16,7 +16,7 @@ func NewTaskUseCase(tr domain.TaskRepository, ur domain.UserRepository, env *con
 	return &TaskUseCase{
 		TaskRepository: tr,
 		UserRepository: ur,
-		environment: env,
+		Environment: env,
 		
 	}
 }
