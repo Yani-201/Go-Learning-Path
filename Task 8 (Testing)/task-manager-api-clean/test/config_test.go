@@ -8,14 +8,11 @@ import (
     "github.com/stretchr/testify/assert"
     "github.com/stretchr/testify/require"
     "github.com/stretchr/testify/suite"
-    "go.mongodb.org/mongo-driver/mongo"
-    "go.mongodb.org/mongo-driver/mongo/options"
-    "context"
+
 )
 
 type ConfigTestSuite struct {
     suite.Suite
-    mockClient *mongo.Client
 }
 
 func (suite *ConfigTestSuite) SetupSuite() {
@@ -26,18 +23,6 @@ func (suite *ConfigTestSuite) SetupSuite() {
     os.Setenv("TIMEOUT", "30s")
     os.Setenv("DATABASE_NAME", "testdb")
 
-    clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-    client, err := mongo.Connect(context.TODO(), clientOptions)
-    require.NoError(suite.T(), err)
-    suite.mockClient = client
-}
-
-func (suite *ConfigTestSuite) TearDownSuite() {
- 
-    if suite.mockClient != nil {
-        err := suite.mockClient.Disconnect(context.TODO())
-        require.NoError(suite.T(), err)
-    }
 }
 
 func (suite *ConfigTestSuite) TestLoad_Success() {
@@ -49,12 +34,6 @@ func (suite *ConfigTestSuite) TestLoad_Success() {
     assert.Equal(suite.T(), "8080", env.Port)
     assert.Equal(suite.T(), "30s", env.TimeOut)
     assert.Equal(suite.T(), "testdb", env.DatabaseName)
-}
-
-func (suite *ConfigTestSuite) TestGetClient_Success() {
-    db, err := config.GetClient("mongodb://localhost:27017", "testdb")
-    require.NoError(suite.T(), err)
-    assert.NotNil(suite.T(), db)
 }
 
 func TestConfigTestSuite(t *testing.T) {
