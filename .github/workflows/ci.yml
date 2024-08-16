@@ -31,7 +31,7 @@ jobs:
       working-directory: Task 8 (Testing)/task-manager-api-clean
 
     - name: Controller Test
-      run: go test ./controller -v -coverprofile=coverage_controller.out -covermode=atomic
+      run: go test ./api/controller -v -coverprofile=coverage_controller.out -covermode=atomic
       working-directory: Task 8 (Testing)/task-manager-api-clean
 
     - name: Infrastructure Test
