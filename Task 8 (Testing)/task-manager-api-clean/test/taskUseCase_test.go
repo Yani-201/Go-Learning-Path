@@ -22,16 +22,14 @@ const (
 type TaskUseCaseTestSuite struct {
     suite.Suite
     repo    *mocks.TaskRepository
-    useCase *usecase.TaskUseCase
+    useCase domain.TaskUseCase
 
 }
 
 func (suite *TaskUseCaseTestSuite) SetupTest() {
 	suite.repo = new(mocks.TaskRepository)
-    suite.useCase = &usecase.TaskUseCase{
-        TaskRepository: suite.repo,
-        
-    }
+    suite.useCase = usecase.NewTaskUseCase(suite.repo)
+
 }
 
 func (suite *TaskUseCaseTestSuite) TestCreate_Success() {
