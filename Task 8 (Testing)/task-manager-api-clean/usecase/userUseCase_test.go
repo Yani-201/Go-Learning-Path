@@ -1,4 +1,4 @@
-package tests
+package usecase_test
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"task-manager-api-clean/config"
 	"task-manager-api-clean/domain"
 	"task-manager-api-clean/domain/mocks"
-	"task-manager-api-clean/usecase"
+    "task-manager-api-clean/usecase"
 	"task-manager-api-clean/utils"
 
 	"github.com/stretchr/testify/mock"
@@ -18,18 +18,15 @@ import (
 type UserUseCaseTestSuite struct {
     suite.Suite
     repo    *mocks.UserRepository
-    useCase *usecase.UserUseCase
+    useCase domain.UserUseCase
     env     *config.Environment
 }
 
 func (suite *UserUseCaseTestSuite) SetupTest() {
     suite.repo = new(mocks.UserRepository)
 	suite.env = &config.Environment{JwtSecret: "secret"}
-    suite.useCase = &usecase.UserUseCase{
-        UserRepository: suite.repo,
-        Environment:    suite.env,
-        
-    }
+    suite.useCase = usecase.NewUserUseCase(suite.repo, suite.env)
+
 }
 
 func (suite *UserUseCaseTestSuite) TestRegisterUser_Success() {
@@ -73,7 +70,7 @@ func (suite *UserUseCaseTestSuite) TestLogin_Success() {
     suite.NoError(err)
     
     suite.repo.On("GetByUsername", mock.Anything, "test").Return(&domain.User{UserID: "1", Username: "test", Password: hashedPassword}, nil)
-    suite.useCase.UserRepository.(*mocks.UserRepository).On("GetByUsername", mock.Anything, "test").Return(&domain.User{Username: "test", Password: hashedPassword}, nil)
+    suite.repo.On("GetByUsername", mock.Anything, "test").Return(&domain.User{Username: "test", Password: hashedPassword}, nil)
 
     jwtToken, err := suite.useCase.Login(context.Background(), payload)
     suite.NoError(err)

@@ -1,4 +1,4 @@
-package tests
+package usecase_test
 
 import (
 	"context"
@@ -8,7 +8,8 @@ import (
 
 	"task-manager-api-clean/domain"
 	"task-manager-api-clean/domain/mocks"
-	"task-manager-api-clean/usecase"
+    "task-manager-api-clean/usecase"
+
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
