@@ -1,0 +1,39 @@
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Install dependencies
+      run: go mod download
+      working-directory: Task 8 (Testing)/task-manager-api-clean
+
+    - name: Tidy-up modules
+      run: go mod tidy
+      working-directory: Task 8 (Testing)/task-manager-api-clean
+      
+    - name: Usecase Test
+      run: go test ./usecase -v -coverprofile=coverage_usecases.out -covermode=atomic
+      working-directory: Task 8 (Testing)/task-manager-api-clean
+
+    - name: Controller Test
+      run: go test ./controller -v -coverprofile=coverage_controller.out -covermode=atomic
+      working-directory: Task 8 (Testing)/task-manager-api-clean
+
+    - name: Infrastructure Test
+      run: go test ./test -v -coverprofile=coverage_infrastructure.out -covermode=atomic
+      working-directory: Task 8 (Testing)/task-manager-api-clean
