@@ -55,7 +55,7 @@ func (uc *UserUseCase) RegisterUser(c context.Context, payload *domain.UserCreat
 func (uc *UserUseCase) Login(c context.Context, payload *domain.UserLogin) (string, error) {
 	user, err := uc.UserRepository.GetByUsername(c, payload.Username)
 	if err != nil {
-		return "", errors.New("invalid username or password")
+		return "", err
 	}
 
 	// Compare passwords

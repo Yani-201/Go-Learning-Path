@@ -198,6 +198,23 @@ func (suite *UserControllerTestSuite) TestPromoteUser_UserNotFound() {
     suite.useCase.AssertCalled(suite.T(), "Promote", mock.Anything, username)
 }
 
+func (suite *UserControllerTestSuite) TestPromoteUser_Failure() {
+    username := "testuser"
+    tokenString := suite.createTestJWT("1", "adminUser", "admin")
+
+    suite.useCase.On("Promote", mock.Anything, username).Return(nil, errors.New("usecase error"))
+
+    req, _ := http.NewRequest("POST", "/promote/"+username, nil)
+	req.Header.Set("Authorization", "Bearer "+tokenString)
+	w := httptest.NewRecorder()
+
+    suite.router.ServeHTTP(w, req)
+    suite.Equal(http.StatusInternalServerError, w.Code)
+
+    expectedResponse := `{"error":"usecase error"}`
+    suite.JSONEq(expectedResponse, w.Body.String())
+    suite.useCase.AssertCalled(suite.T(), "Promote", mock.Anything, username)
+}
 
 func TestUserControllerTestSuite(t *testing.T) {
     suite.Run(t, new(UserControllerTestSuite))

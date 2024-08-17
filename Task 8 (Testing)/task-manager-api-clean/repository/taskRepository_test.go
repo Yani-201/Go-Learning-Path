@@ -74,7 +74,7 @@ func (suite *TaskRepositoryTestSuite) TestUpdate_Success() {
     task := &domain.Task{Title: "Test Task", Description: "Description of test task", Status: "Pending", DueDate: time.Now()}
     suite.repo.Create(ctx, task)
 
-    updateTask := &domain.Task{Title: "Updated Task Title", Description: "Updated Description"}
+    updateTask := &domain.Task{Title: "Updated Task Title", Description: "Updated Description", Status: "Completed", DueDate: time.Now()}
     updatedTask, err := suite.repo.Update(ctx, task.Id, updateTask)
     suite.NoError(err)
     suite.Equal(updateTask.Title, updatedTask.Title)

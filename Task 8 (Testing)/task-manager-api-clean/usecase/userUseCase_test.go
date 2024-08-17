@@ -64,6 +64,18 @@ func (suite *UserUseCaseTestSuite) TestRegisterUser_UserExists() {
     suite.EqualError(err, "user already exists")
 }
 
+func (suite *UserUseCaseTestSuite) TestRegisterUser_CreateRepoError() {
+    payload := &domain.UserCreate{Username: "test", Password: "test", Email: "test@example.com"}
+    suite.repo.On("GetByUsername", mock.Anything, "test").Return(nil, errors.New("user not found"))
+    suite.repo.On("Create", mock.Anything, mock.AnythingOfType("*domain.User")).Return(nil, errors.New("failed to create user"))
+
+    _, err := suite.useCase.RegisterUser(context.Background(), payload)
+    suite.EqualError(err, "failed to create user")
+
+    suite.repo.AssertCalled(suite.T(), "GetByUsername", mock.Anything, "test")
+    suite.repo.AssertCalled(suite.T(), "Create", mock.Anything, mock.AnythingOfType("*domain.User"))
+}
+
 func (suite *UserUseCaseTestSuite) TestLogin_Success() {
     payload := &domain.UserLogin{Username: "test", Password: "hashedPassword"}
     hashedPassword, err := utils.EncryptPassword("hashedPassword")
@@ -88,6 +100,16 @@ func (suite *UserUseCaseTestSuite) TestLogin_InvalidCredentials() {
     _, err = suite.useCase.Login(context.Background(), payload)
     suite.EqualError(err, "invalid username or password")
 }
+func (suite *UserUseCaseTestSuite) TestLogin_GetByUsernameRepoError() {
+    payload := &domain.UserLogin{Username: "test", Password: "hashedPassword"}
+    
+    suite.repo.On("GetByUsername", mock.Anything, "test").Return(nil, errors.New("repository error"))
+
+    _, err := suite.useCase.Login(context.Background(), payload)
+    suite.EqualError(err, "repository error")
+    
+    suite.repo.AssertCalled(suite.T(), "GetByUsername", mock.Anything, "test")
+}
 
 func (suite *UserUseCaseTestSuite) TestPromote_Success() {
     username := "testUser"
@@ -107,6 +129,18 @@ func (suite *UserUseCaseTestSuite) TestPromote_UserNotFound() {
 
     _, err := suite.useCase.Promote(context.Background(), username)
     suite.EqualError(err, "user not found")
+}
+
+func (suite *UserUseCaseTestSuite) TestPromote_UpdateRoleRepoError() {
+    username := "testUser"
+    suite.repo.On("GetByUsername", mock.Anything, username).Return(&domain.User{UserID: "1", Username: username, Role: "user"}, nil)
+    suite.repo.On("UpdateRole", mock.Anything, username, "admin").Return(nil, errors.New("repository error"))
+
+    _, err := suite.useCase.Promote(context.Background(), username)
+    suite.EqualError(err, "repository error")
+    
+    suite.repo.AssertCalled(suite.T(), "GetByUsername", mock.Anything, username)
+    suite.repo.AssertCalled(suite.T(), "UpdateRole", mock.Anything, username, "admin")
 }
 
 func TestUserUseCaseTestSuite(t *testing.T) {

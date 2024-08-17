@@ -37,6 +37,15 @@ func (suite *UtilsTestSuite) TestCheckUser_UserNotFound() {
     assert.Nil(suite.T(), user, "Expected user to be nil when not found")
 }
 
+func (suite *UtilsTestSuite) TestCheckUser_UserNotInContext() {
+    c, _ := gin.CreateTestContext(nil)
+    c.Set("AuthenticatedUser", "invalidUserType") 
+
+    user, err := utils.CheckUser(c)
+    assert.Error(suite.T(), err, "Expected an error when user is not found in context")
+    assert.Nil(suite.T(), user, "Expected user to be nil when not found in context")
+}
+
 func (suite *UtilsTestSuite) TestEncryptPassword_Success() {
     password := "mySecretPassword"
     hashedPassword, err := utils.EncryptPassword(password)
